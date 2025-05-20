@@ -35,7 +35,6 @@ def process_labels_gold_table_label_store(snapshot_date_str, silver_loan_daily_d
         
         # select columns to save
         df = df.select("loan_id", "Customer_ID", "label", "label_def", "snapshot_date")
-        print(df.toPandas())
     
         # save gold table - IRL connect to database to write
         partition_name = "gold_label_store_" + snapshot_date_str.replace('-','_') + '.parquet'
@@ -81,22 +80,21 @@ def process_labels_gold_table_feature_store(snapshot_date_str, silver_loan_daily
         
 
         # select columns to save
-        df_joined = df_joined.select('loan_id', 'Customer_ID', 'installments_missed', 'dpd', 'Age', 'Annual_Income', 'Monthly_Inhand_Salary', 'Num_Bank_Accounts', 'Num_Credit_Card', 'Interest_Rate', 'Num_of_Loan', 'Delay_from_due_date', 'Num_of_Delayed_Payment', 'Changed_Credit_Limit', 'Num_Credit_Inquiries', 'Outstanding_Debt',  'Credit_Utilization_Ratio', 'Total_EMI_per_month', 'Amount_invested_monthly', 'Monthly_Balance', 'Credit_History_Months', 'spending_scale', 'value_payments_scale', 'Credit_Mix_scale', 'is_payment_min_amount_yes', "is_payment_min_amount_no")
-        print(df_joined.toPandas())
+        df_joined = df_joined.select('loan_id', 'Customer_ID', 'installments_missed', 'dpd', 'Age', 'Annual_Income', 'Monthly_Inhand_Salary', 'Num_Bank_Accounts', 'Num_Credit_Card', 'Interest_Rate', 'Num_of_Loan', 'Delay_from_due_date', 'Num_of_Delayed_Payment', 'Changed_Credit_Limit', 'Num_Credit_Inquiries', 'Outstanding_Debt',  'Credit_Utilization_Ratio', 'Total_EMI_per_month', 'Amount_invested_monthly', 'Monthly_Balance', 'Credit_History_Months', 'spending_scale', 'value_payments_scale', 'Credit_Mix_scale', 'is_payment_min_amount_yes', "is_payment_min_amount_no", "debt_to_income_ratio")
 
 
     
-        # # save gold table - IRL connect to database to write
-        # partition_name = "gold_label_store_" + snapshot_date_str.replace('-','_') + '.parquet'
-        # filepath = gold_label_store_directory + partition_name
-        # df.write.mode("overwrite").parquet(filepath)
-        # # df.toPandas().to_parquet(filepath,
-        # #           compression='gzip')
-        # print('saved to:', filepath)
+        # save gold table - IRL connect to database to write
+        partition_name = "gold_feature_store_" + snapshot_date_str.replace('-','_') + '.parquet'
+        filepath = gold_feature_store_directory + partition_name
+        df_joined.write.mode("overwrite").parquet(filepath)
+        # df.toPandas().to_parquet(filepath,
+        #           compression='gzip')
+        print('saved to:', filepath)
     
         
         return df_joined
-    except:
+    except Exception as e:
         print("No record found on Date:", snapshot_date_str)
         return None
     

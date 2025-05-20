@@ -179,6 +179,10 @@ def process_silver_table_customer(bronze_attributes_directory, bronze_financials
     # Payment_of_Min_Amount - one hot encode
     df_financials = df_financials.withColumn( "is_payment_min_amount_yes", when(col("Payment_of_Min_Amount") == "Yes", 1).otherwise(0) ) 
     df_financials = df_financials.withColumn( "is_payment_min_amount_no", when(col("Payment_of_Min_Amount") == "No", 1).otherwise(0) )
+
+    # debt_to_income_ratio
+    df_financials = df_financials.withColumn("debt_to_income_ratio", (col("Outstanding_Debt") / col("Annual_Income")+1)).fillna(0)
+    
     
     
     # cast to their respective data types
