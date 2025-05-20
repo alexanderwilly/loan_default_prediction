@@ -38,27 +38,6 @@ def process_bronze_table_lms(snapshot_date_str, bronze_lms_directory, spark):
     return df
 
 
-def process_bronze_table_clickstream(snapshot_date_str, bronze_clickstream_directory, spark):
-    # prepare arguments
-    snapshot_date = datetime.strptime(snapshot_date_str, "%Y-%m-%d")
-    
-    # connect to source back end - IRL connect to back end source system
-    csv_file_path = "data/feature_clickstream.csv"
-
-    # load data - IRL ingest from back end source system
-    df = spark.read.csv(csv_file_path, header=True, inferSchema=True).filter(col('snapshot_date') == snapshot_date)
-    # Filter same as df = df[df['col'] == True]
-    row_count = df.count()
-    print(snapshot_date_str + 'row count:', row_count)
-
-    if row_count > 0:
-        # save bronze table to datamart - IRL connect to database to write
-        partition_name = "bronze_clickstream_" + snapshot_date_str.replace('-','_') + '.csv'
-        filepath = bronze_clickstream_directory + partition_name
-        df.toPandas().to_csv(filepath, index=False)
-        print('saved to:', filepath)
-
-    return df
 
 def process_bronze_table_attributes(bronze_attributes_directory, spark):
     
