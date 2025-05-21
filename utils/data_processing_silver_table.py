@@ -181,7 +181,17 @@ def process_silver_table_customer(bronze_attributes_directory, bronze_financials
     df_financials = df_financials.withColumn( "is_payment_min_amount_no", when(col("Payment_of_Min_Amount") == "No", 1).otherwise(0) )
 
     # debt_to_income_ratio
-    df_financials = df_financials.withColumn("debt_to_income_ratio", (col("Outstanding_Debt") / col("Annual_Income")+1)).fillna(0)
+    # high debt but low income increases the possibility of loan default
+    df_financials = df_financials.withColumn("debt_to_income_ratio", (col("Outstanding_Debt") / (col("Annual_Income")+1) )).fillna(0)
+
+    # income_to_emi_ratio
+    # lower income_to_emi_ratio means burden is high
+    df_financials = df_financials.withColumn("income_to_emi_ratio", (col("Monthly_Inhand_Salary") / (col("Total_EMI_per_month")+1) )).fillna(0)
+
+    # emi_to_balance_ratio
+    # high EMI can eat up balance
+    df_financials = df_financials.withColumn("emi_to_balance_ratio", (col("Total_EMI_per_month") / (col("Monthly_Balance")+1) )).fillna(0)
+
     
     
     
